@@ -8,6 +8,7 @@ from website import Website
 
 # World Stock Market Watch (Quotes + Indices + Currency) (Python)
 # by Asher Martin
+# Date: July 2020
 
 # url = "https://www.google.com/search?q=INDEXSP:.INX"
 # url = "https://finance.yahoo.com/quote/%5EGSPC?p=^GSPC"
