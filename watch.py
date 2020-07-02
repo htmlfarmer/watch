@@ -6,6 +6,8 @@ import re
 from file import READ
 from website import Website
 
+# World Stock Market Watch (Quotes + Indices + Currency) (Python)
+# by Asher Martin
 
 # url = "https://www.google.com/search?q=INDEXSP:.INX"
 # url = "https://finance.yahoo.com/quote/%5EGSPC?p=^GSPC"
