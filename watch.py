@@ -21,17 +21,17 @@ def watch():
     time_date()
     currency_check()
     world_indices_check()
-    stock_quote("SP500")
+    get_live_stock_quote("PBR")
 
 
-def stock_quote(stock):
-    quote_url = "https://finance.yahoo.com/quote/%5EGSPC?p=^GSPC"
+def get_live_stock_quote(stock_ticker_symbol):
+    quote_url = "https://finance.yahoo.com/quote/"+stock_ticker_symbol
     xml = get_xml(quote_url)
     xpath_quote = '//*[@id="quote-header-info"]/div[3]/div/div/span[1]'
     quote = xml.find('.' + xpath_quote).text
     locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
     quote = locale.atof(quote)
-    print(stock + " = " + str(quote))
+    print(stock_ticker_symbol + " = " + str(quote))
 
 # return the value at a given xpath
 def xpath_text(website, xpath):
