@@ -23,6 +23,20 @@ def watch():
     world_indices_check()
     get_live_stock_quote("PBR")
 
+def buy(stock):
+    print ("buy")
+
+def sell(stock):
+    print ("buy")
+
+def get_option_price(stock):
+    print("get option chain")
+    print("call price")
+    print("put price")
+
+def log(item):
+    # save data to log file (csv)
+    print("log.txt")
 
 def get_live_stock_quote(stock_ticker_symbol):
     quote_url = "https://finance.yahoo.com/quote/"+stock_ticker_symbol
