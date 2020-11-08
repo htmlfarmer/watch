@@ -55,6 +55,7 @@ def xpath_text(website, xpath):
     else:
         return None
 
+
 # watch a url
 def get_xml(url):
     text = REQUEST(url)
