@@ -1,5 +1,7 @@
 import re
 import xml.etree.ElementTree as ElementTree
+
+
 # watch a url
 def html_to_xml_parser(text):
     # (REMOVE <SCRIPT> to </script> and variations)
@@ -20,6 +22,10 @@ def html_to_xml_parser(text):
 
     # (REMOVE HTML DOCTYPE <!DOCTYPE html to > and variations)
     pattern = r'<[ ]*\![ ]*DOCTYPE.*?>'  # mach any char zero or more times
+    text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
+
+    # (REMOVE HTML <HEAD> to </HEAD> and variations)
+    pattern = r'<[ ]*head.*?\/[ ]*head[ ]*>'  # mach any char zero or more times
     text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
 
     # for some reason & is not a valid char in XML parse

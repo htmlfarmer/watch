@@ -5,16 +5,36 @@ import xml.etree.ElementTree as ElementTree
 import re
 from xml_parser import html_to_xml_parser
 
+screener_url = "https://finance.yahoo.com/screener/unsaved/ec58eb86-4029-4e3e-83e0-895ee8dfedc9?offset=0&count=100"
+all_usa_stocks = "https://finance.yahoo.com/screener/060813e7-8061-4068-821f-8ba5865e1eb0?offset=0&count=100"
 
-def high_volume_screener():
-    screener_url = "https://finance.yahoo.com/screener/unsaved/ec58eb86-4029-4e3e-83e0-895ee8dfedc9?offset=0&count=100"
-    all_usa_stocks = "https://finance.yahoo.com/screener/unsaved/1e737b26-71fb-402c-859e-805295195484?offset=0&count=100"
-    #html = REQUEST(screener_url)
-    html = REQUEST(all_usa_stocks)
+
+# page 2 https://finance.yahoo.com/screener/unsaved/1e737b26-71fb-402c-859e-805295195484?count=100&offset=100
+
+def main():
+    download_yahoo_screener(all_usa_stocks)
+
+
+def download_yahoo_screener(url):
+    html = REQUEST(url)
     xml = html_to_xml_parser(html)
+    screened = yahoo_volume_screener(xml)
+    number_screened = int(xml.find('.' + '//*[@id="screener-criteria"]/div[2]/div[1]/div[2]/div/div[2]/div').text)
+    index = 0
+    index = index + 100
+    while index < number_screened:
+        url = url[0:url.find("?")] + "offset=" + str(index) + "&count=100"
+        # first index of ? or /
+        html = REQUEST(url)
+        xml = html_to_xml_parser(html)
+        screened.append(yahoo_volume_screener(xml))
+        index = index + 100
+    return screened
 
+
+def yahoo_volume_screener(xml):
     # xpath_each_rows_details = '//*[@id="scr-res-table"]/div[1]/table/tbody/tr[1]/td[1]'
-    table = xml.findall('.'+'//*[@id="scr-res-table"]/div[1]/table/tbody/tr')
+    table = xml.findall('.' + '//*[@id="scr-res-table"]/div[1]/table/tbody/tr')
 
     # get the header from the HTML / XML
     xpath_header = '//*[@id="scr-res-table"]/div[1]/table/thead/tr/th'
@@ -22,7 +42,7 @@ def high_volume_screener():
 
     # get the number of rows from the XML
     xpath_table_elements = '//*[@id="scr-res-table"]/div[1]/table/tbody/tr/td/'
-    #table = xml.findall('.'+xpath_table_elements)
+    # table = xml.findall('.'+xpath_table_elements)
 
     # //*[@id="scr-res-table"]/div[1]/table/tbody/tr[2]/td[1]/a
     # //*[@id="scr-res-table"]/div[1]/table/tbody/tr[2]/td[2]
@@ -52,22 +72,42 @@ def high_volume_screener():
 
     quotes = []
 
-    for row in range(0, len(table)-1):
+    for row in range(0, len(table)):
         quote = {}
-        for column in range(0, len(table[row].findall('td'))-1):
+        for column in range(0, len(table[row].findall('td')) - 1):
             text = str(table[row].findall('td')[column].text)
             if table[row].findall('td')[column].find('a') is not None:
                 text = table[row].findall('td')[column].find('a').text
             elif table[row].findall('td')[column].find('span') is not None:
                 text = table[row].findall('td')[column].find('span').text
-            #text = text.replace(' ', '_')
+            # text = text.replace(' ', '_')
+            text = text.replace(',', '')
             text = text.replace('(', '')
             text = text.replace(')', '')
-            #text = text.replace('%', 'Percent')
-            #print(text)
-            quote[quote_format[column]] = text
+            text = text.replace('%', '')
+            text = text.replace('+', '')
+            if len(text) > 2:
+                if text[-2].isdigit():
+                    if text[-1] == "M":
+                        text = text.replace('.', '')
+                        text = text.replace('M', '')
+                        text = text + "000"
+                    if text[-1] == "B":
+                        text = text.replace('.', '')
+                        text = text.replace('B', '')
+                        text = text + "000000"
+                    if text[-1] == "T":
+                        text = text.replace('.', '')
+                        text = text.replace('T', '')
+                        text = text + "000000000"
+                # print(text)
+            if (text.replace('.', '', 1).replace('-', '', 1).isdigit()):
+                quote[quote_format[column]] = float(text)
+            else:
+                quote[quote_format[column]] = text
         quotes.append(quote)
 
-    print(quotes)
+    return quotes
 
-high_volume_screener()
+
+main()
