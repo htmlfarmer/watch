@@ -18,56 +18,81 @@ from website import Website
 
 symbols_to_watch = ["ttm", "tsla", "msft", "googl"]
 symbols_to_watch = ["chu", "ytra", "pbr"]
+symbols_to_watch = ["pbr", "vale"]
 
 def watch():
     time_date()
     for symbol in symbols_to_watch:
         quote(symbol)
+    currency_check()
+    world_indices_check()
+"""
     for symbol in symbols_to_watch:
         print("watch calls: ")
         get_option(symbol, "call")
         print("watch puts: ")
         get_option(symbol, "put")
-    currency_check()
-    world_indices_check()
+"""
+
 
 
 def quote(symbol):
     quote_url = "https://finance.yahoo.com/quote/"+symbol
+    quate_stats = "https://finance.yahoo.com/quote/" + symbol + "/key-statistics?p=" + symbol
     xml = get_xml(quote_url)
+    xml_stats = get_xml(quate_stats)
+    xpath_name = '//*[@id="quote-header-info"]/div[2]/div[1]/div[1]/h1'
     xpath_price = '//*[@id="quote-header-info"]/div[3]/div/div/span[1]'
-    xpath_bid = '//*[@id="quote-summary"]/div[1]/table/tbody/tr[3]/td[2]/span'
-    xpath_ask = '//*[@id="quote-summary"]/div[1]/table/tbody/tr[4]/td[2]/span'
+    xpath_bid = '//*[@id="quote-summary"]/div[1]/table/tbody/tr[3]/td[2]/'
+    xpath_ask = '//*[@id="quote-summary"]/div[1]/table/tbody/tr[4]/td[2]/'
     xpath_volume = '//*[@id="quote-summary"]/div[1]/table/tbody/tr[7]/td[2]/span'
     xpath_avg_volume = '//*[@id="quote-summary"]/div[1]/table/tbody/tr[8]/td[2]/span'
     xpath_market_cap = '//*[@id="quote-summary"]/div[2]/table/tbody/tr[1]/td[2]/span'
     xpath_day_range = '//*[@id="quote-summary"]/div[1]/table/tbody/tr[5]/td[2]'
     xpath_52_week_range = '//*[@id="quote-summary"]/div[1]/table/tbody/tr[6]/td[2]'
-    xpath_eps = '//*[@id="quote-summary"]/div[2]/table/tbody/tr[4]/td[2]/span'
-    xpath_earnings_date = '//*[@id="quote-summary"]/div[2]/table/tbody/tr[5]/td[2]/span'
     xpath_pe_ratio = '//*[@id="quote-summary"]/div[2]/table/tbody/tr[3]/td[2]/span'
     xpath_close = '//*[@id="quote-summary"]/div[1]/table/tbody/tr[1]/td[2]/span'
     xpath_open = '//*[@id="quote-summary"]/div[1]/table/tbody/tr[2]/td[2]/span'
     xpath_beta = '//*[@id="quote-summary"]/div[2]/table/tbody/tr[2]/td[2]/span'
-    xpath_dividend_yield = '//*[@id="quote-summary"]/div[2]/table/tbody/tr[6]/td[2]'
-    price = float(re.sub("[^\d\.\-]", "", xml.find('.' + xpath_price).text))
-    bid = xml.find('.' + xpath_bid).text
-    ask = xml.find('.' + xpath_ask).text
-    volume = int(re.sub("[^\d\.\-]", "", xml.find('.' + xpath_volume).text))
-    avg_volume = int(re.sub("[^\d\.\-]", "", xml.find('.' + xpath_avg_volume).text))
-    market_cap = float(re.sub("[^\d\.\-]", "", xml.find('.' + xpath_market_cap).text))
-    day_range = xml.find('.' + xpath_day_range).text
-    year_range = xml.find('.' + xpath_52_week_range).text
-    eps = float(re.sub("[^\d\.\-]", "", xml.find('.' + xpath_eps).text))
-    earnings_date = xml.find('.' + xpath_earnings_date).text
-    pe_ratio = xml.find('.' + xpath_pe_ratio).text
-    close = float(re.sub("[^\d\.\-]", "", xml.find('.' + xpath_close).text))
-    open = float(re.sub("[^\d\.\-]", "", xml.find('.' + xpath_open).text))
-    beta = xml.find('.' + xpath_beta).text
-    dividend_yield = xml.find('.' + xpath_dividend_yield).text
-    stock = {"price" : price, "bid" : bid, "ask" : ask, "volume" : volume, "avg_volume" : avg_volume, \
-        "market_cap" : market_cap, "day_range" : day_range, "year_range" : year_range, "eps" : eps, "earnings_date" : earnings_date,
-        "pe_ratio" : pe_ratio, "close" : close, "open" : open, "beta" : beta, "dividend_yielf" : dividend_yield}
+    xpath_dividend_yield = '//*[@id="quote-summary"]/div[2]/table/tbody/tr[7]/td[2]/span'
+    xpath_eps = '//*[@id="quote-summary"]/div[2]/table/tbody/tr[4]/td[2]/span'
+    xpath_earnings_date = '//*[@id="quote-summary"]/div[2]/table/tbody/tr[5]/td[2]/span'
+    xpaths = {"name" : xpath_name, "price" : xpath_price, "bid" : xpath_bid, "bid_volume" : xpath_bid, "ask" : xpath_ask, "ask_volume" : xpath_ask,"volume" : xpath_volume, "avg_volume" : xpath_avg_volume, \
+        "market_cap" : xpath_market_cap, "day_range" : xpath_day_range, "year_range" : xpath_52_week_range, "eps" : xpath_eps, "earnings_date" : xpath_earnings_date, \
+        "pe_ratio" : xpath_pe_ratio, "previous_close" : xpath_close, "open" : xpath_open, "beta" : xpath_beta, "dividend_yield" : xpath_dividend_yield}
+    
+    clock = datetime.datetime.now()
+    #milliseconds = str(clock.time())
+    time = clock.time().strftime('%H:%M:%S')
+    date = str(datetime.date.today().strftime("%B")) + " " \
+          + str(datetime.date.today().strftime("%d")) + ", " \
+          + str(datetime.date.today().strftime("%Y"))
+    stock = {"ticker" : symbol, "date" : date, "time" : time}
+    for xpath in xpaths:
+        if xml.find('.' + xpaths[xpath]) != None:
+            text = xml.find('.' + xpaths[xpath]).text
+            if text != None:
+                if re.sub("[^\d\.\-]", "", text) != '':
+                    # check for market cap case (b or m) (add later if it has a m you need to "mill")
+                    # check for bid/ask
+                    if xpath == "bid" or xpath == "bid_volume":
+                        xsplit = re.split("x",xml.find('.' + xpaths[xpath]).text)
+                        stock["bid"] = float(re.sub("[^\d\.\-]", "", xsplit[0]))
+                        stock["bid_volume"] = float(re.sub("[^\d\.\-]", "", xsplit[1]))
+                    elif xpath == "ask" or xpath == "ask_volume":
+                        xsplit = re.split("x",xml.find('.' + xpaths[xpath]).text)
+                        stock["ask"] = float(re.sub("[^\d\.\-]", "", xsplit[0]))
+                        stock["ask_volume"] = float(re.sub("[^\d\.\-]", "", xsplit[1]))
+                    elif xpath == "day_range":
+                        stock["day_range"] = xml.find('.' + xpath_day_range).text
+                    elif xpath == "year_range":
+                        stock["year_range"] = xml.find('.' + xpath_52_week_range).text
+                    elif xpath == "dividend_yield":
+                        stock["dividend_yield"] = xml.find('.' + xpath_dividend_yield).text
+                    elif xpath == "name":
+                        stock["name"] = text
+                    else: 
+                        stock[xpath] = float(re.sub("[^\d\.\-]", "", xml.find('.' + xpaths[xpath]).text))
     print(stock)
 
 def buy(stock):
