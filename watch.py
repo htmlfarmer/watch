@@ -215,10 +215,15 @@ def currency_check():
     currencies = "https://finance.yahoo.com/currencies/"
     print("checking website: " + currencies)
     xml = get_xml(currencies)
+    print ("Website read successfully!")
 
-    xpath_labels = '//*[@id="list-res-table"]/div[1]/table/tbody/tr[1]/td[1]/a'
-
-    # count the number of table rows
+    xpath_labels = '//*[@id="list-res-table"]/div[1]/table/thead/tr/th'
+    num_lables = len(xml.findall('.' + xpath_labels))
+    labels = xml.findall('.' + xpath_labels)
+    header = []
+    for label in labels: 
+        header.append(label.text) 
+    print (header)
 
     # count the number of "rows" in the call or put table
     xpath_table = '//*[@id="list-res-table"]/div[1]/table/tbody/tr'
@@ -238,6 +243,7 @@ def world_indices_check():
     indices = "https://finance.yahoo.com/world-indices"
     print("checking: " + indices)
     xml = get_xml(indices)
+    print("Web Page Read (Success!)")
 
     # count the number of "rows" in the call or put table
     xpath_table = '//*[@id="list-res-table"]/div[1]/table/tbody/tr'
