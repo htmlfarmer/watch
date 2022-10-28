@@ -217,6 +217,7 @@ def currency_check():
     xml = get_xml(currencies)
     print ("Website read successfully!")
 
+    # this code should read all the headers and then print the header!
     xpath_labels = '//*[@id="list-res-table"]/div[1]/table/thead/tr/th'
     num_lables = len(xml.findall('.' + xpath_labels))
     labels = xml.findall('.' + xpath_labels)
