@@ -22,17 +22,18 @@ symbols_to_watch = ["pbr", "vale"]
 
 def watch():
     time_date()
-    for symbol in symbols_to_watch:
-        quote(symbol)
     currency_check()
     world_indices_check()
-"""
+
+    for symbol in symbols_to_watch:
+        quote(symbol)
+
     for symbol in symbols_to_watch:
         print("watch calls: ")
         get_option(symbol, "call")
         print("watch puts: ")
         get_option(symbol, "put")
-"""
+
 
 
 
@@ -217,32 +218,22 @@ def currency_check():
     currencies = "https://finance.yahoo.com/currencies/"
     print("checking website: " + currencies)
     xml = get_xml(currencies)
-    xpath_currencies = {"EURUSD": '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[3]/td[3]',
-                        "CNYUSD": '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[16]/td[3]',
-                        "INRUSD": '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[19]/td[3]',
-                        "GBPUSD": '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[5]/td[3]',
-                        "MYRUSD": '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[24]/td[3]',
-                        "JPYUSD": '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[4]/td[3]',
-                        "GBPUSD": '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[5]/td[3]',
-                        "MXNUSD": '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[20]/td[3]',
-                        "PHPUSD": '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[21]/td[3]',
-                        "RUBUSD": '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[26]/td[3]',
-                        "IDRUSD": '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[22]/td[3]',
-                        "THBUSD": '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[23]/td[3]',
-                        "ZARUSD": '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[25]/td[3]',
-                        "CHFUSD": '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[13]/td[3]',
-                        "SGDUSD": '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[18]/td[3]',
-                        "HKDUSD": '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[17]/td[3]',
-                        "NZDUSD": '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[7]/td[3]'}
 
-    for currency in xpath_currencies:
-        quote = xml.find('.' + xpath_currencies[currency]).text
-        locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
-        quote = locale.atof(quote)
-        # NAME = '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[4]/td[1]/a'
-        # PRICE = '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[4]/td[3]',
-        print(currency + " = $" + str(quote))
+    xpath_labels = '//*[@id="list-res-table"]/div[1]/table/tbody/tr[1]/td[1]/a'
 
+    # count the number of table rows
+
+    # count the number of "rows" in the call or put table
+    xpath_table = '//*[@id="list-res-table"]/div[1]/table/tbody/tr'
+    table_rows = len(xml.findall('.' + xpath_table))
+
+    # print each label for each row
+    for row in range(1, table_rows+1):
+        xpath_name = '//*[@id="list-res-table"]/div[1]/table/tbody/tr['+ str(row) +']/td[1]/a'
+        name = xml.find('.' + xpath_name).text
+        xpath_price = '//*[@id="list-res-table"]/div[1]/table/tbody/tr['+ str(row) +']/td[3]/'
+        price = xml.find('.' + xpath_price).text
+        print (name + " : " + price)
 
 def world_indices_check():
     # WORLD INDICES
@@ -250,20 +241,20 @@ def world_indices_check():
     indices = "https://finance.yahoo.com/world-indices"
     print("checking: " + indices)
     xml = get_xml(indices)
-    xpath_indices = {"USA SP500 (^GSPC)": '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[1]/td[3]',
-                     "Brazil (IBOVESPA ^BVSP)": '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[30]/td[3]',
-                     "Mexico (IPC ^MXX)": '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[30]/td[3]',
-                     "India (BSE SENSEX ^BSESN)" : '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[23]/td[3]',
-                     "Germany (DAX ^GDAXI)" : '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[10]/td[3]'
-                     }
 
-    for index in xpath_indices:
-        quote = xml.find('.' + xpath_indices[index]).text
-        locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
-        quote = locale.atof(quote)
-        # NAME = '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[4]/td[1]/a'
-        # PRICE = '//*[@id="yfin-list"]/div[2]/div/div/table/tbody/tr[4]/td[3]',
-        print(index + " = $" + str(quote))
+    # count the number of "rows" in the call or put table
+    xpath_table = '//*[@id="list-res-table"]/div[1]/table/tbody/tr'
+    table_rows = len(xml.findall('.' + xpath_table))
+
+    # print each label for each row
+    for row in range(1, table_rows+1):
+        xpath_symbol = '//*[@id="list-res-table"]/div[1]/table/tbody/tr['+ str(row) +']/td[1]/a'
+        symbol = xml.find('.' + xpath_symbol).text
+        xpath_name = '//*[@id="list-res-table"]/div[1]/table/tbody/tr['+ str(row) +']/td[2]'
+        name = xml.find('.' + xpath_name).text
+        xpath_price = '//*[@id="list-res-table"]/div[1]/table/tbody/tr['+ str(row) +']/td[3]/fin-streamer'
+        price = xml.find('.' + xpath_price).text
+        print (name + " (" + symbol + ") : " + price)
 
 
 # print a header showing all the details of when the transaction takes place
