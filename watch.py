@@ -34,9 +34,6 @@ def watch():
         print("watch puts: ")
         get_option(symbol, "put")
 
-
-
-
 def quote(symbol):
     quote_url = "https://finance.yahoo.com/quote/"+symbol
     quate_stats = "https://finance.yahoo.com/quote/" + symbol + "/key-statistics?p=" + symbol
