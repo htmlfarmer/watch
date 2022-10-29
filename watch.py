@@ -8,7 +8,11 @@ from website import Website
 
 # World Stock Market Watch (Quotes + Indices + Currency) (Python)
 # by Asher Martin
-# Date: July 2020
+# Date: October 2022
+
+# IDEAS FOR FURTHER PROJECTS
+# TODO setup NLP natural language processing
+# TODO setup GUI interface with Python! 
 
 # url = "https://www.google.com/search?q=INDEXSP:.INX"
 # url = "https://finance.yahoo.com/quote/%5EGSPC?p=^GSPC"
@@ -20,6 +24,7 @@ symbols_to_watch = ["ttm", "tsla", "msft", "googl"]
 symbols_to_watch = ["chu", "ytra", "pbr"]
 symbols_to_watch = ["pbr", "vale"]
 
+# Here is the main program that "watches" the internet for me!
 def watch():
     time_date()
     currency_check()
@@ -209,7 +214,6 @@ def get_xml(url):
     xml = ElementTree.fromstring(text, parser=parser)
     return xml
 
-
 def currency_check():
     print("World Currencies")
     currencies = "https://finance.yahoo.com/currencies/"
@@ -226,18 +230,46 @@ def currency_check():
         header.append(label.text) 
     print (header)
 
+    # create an dictionary element for each
+    currency = {}
+    for element in header:
+        currency[element] = ""
+
     # count the number of "rows" in the call or put table
     xpath_table = '//*[@id="list-res-table"]/div[1]/table/tbody/tr'
     table_rows = len(xml.findall('.' + xpath_table))
 
-    # print each label for each row
-    for row in range(1, table_rows+1):
-        xpath_name = '//*[@id="list-res-table"]/div[1]/table/tbody/tr['+ str(row) +']/td[1]/a'
-        name = xml.find('.' + xpath_name).text
-        xpath_price = '//*[@id="list-res-table"]/div[1]/table/tbody/tr['+ str(row) +']/td[3]/'
-        price = xml.find('.' + xpath_price).text
-        print (name + " : " + price)
+    xml_table(xpath_labels, xpath_table, xml)
 
+def xml_table(xpath_table_header, xpath_table_body, xml):
+
+    # this code should read all the headers and then print the header!
+    xpath_table_header = '//*[@id="list-res-table"]/div[1]/table/thead/tr/th'
+    num_lables = len(xml.findall('.' + xpath_table_header))
+    labels = xml.findall('.' + xpath_table_header)
+    header = []
+    for label in labels: 
+        header.append(label.text) 
+    print (header)
+
+    # count the number of "rows" in the call or put table
+    # todo add the code to search for the name of the body of the table.
+    #end = xpath_table_header.rfind("tr/")
+    #xpath_table = xpath_table_header[:end+2]
+    #table_rows = len(xml.findall('.' + xpath_table))
+"""
+    # print each label for each row
+    table_rows = len(xml.findall('.' + xpath_table_body))
+    for row in range(1, table_rows+1):
+        for element in range(0, len(header)):
+            xpath_name = '//*[@id="list-res-table"]/div[1]/table/tbody/tr['+ str(row) +']/td['+ str(element+1) +']'
+            if xml.find('.' + xpath_name) == None:
+                xpath_name = '//*[@id="list-res-table"]/div[1]/table/tbody/tr['+ str(row) +']/td['+ str(element+1) +']/a'
+            name = xml.find('.' + xpath_name).text
+            print (header[element] + " " + name)
+
+            # //*[@id="list-res-table"]/div[1]/table/tbody/tr[1]/td[3]/fin-streamer //*[@id="list-res-table"]/div[1]/table/tbody/tr[1]/td[4]/fin-streamer/span
+"""
 def world_indices_check():
     # WORLD INDICES
     print("World Stock Market Indices")
