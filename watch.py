@@ -27,6 +27,7 @@ symbols_to_watch = ["pbr", "vale"]
 # Here is the main program that "watches" the internet for me!
 def watch():
     time_date()
+    check_wikipedia_news()
     currency_check()
     world_indices_check()
 
@@ -213,6 +214,13 @@ def get_xml(url):
     parser = ElementTree.XMLParser(encoding="utf-8")
     xml = ElementTree.fromstring(text, parser=parser)
     return xml
+
+def check_wikipedia_news():
+    print("Checking Wikipedia News")
+    wikipedia = "https://en.wikipedia.org/wiki/Portal:Current_events"
+    print("loading wikipedia")
+    #text = get_xml(wikipedia) #note there is a bug when parsing the wikipedia pages!
+    print("recieved!")
 
 def currency_check():
     print("World Currencies")
