@@ -223,17 +223,6 @@ def currency_check():
 
     # this code should read all the headers and then print the header!
     xpath_labels = '//*[@id="list-res-table"]/div[1]/table/thead/tr/th'
-    num_lables = len(xml.findall('.' + xpath_labels))
-    labels = xml.findall('.' + xpath_labels)
-    header = []
-    for label in labels: 
-        header.append(label.text) 
-    print (header)
-
-    # create an dictionary element for each
-    currency = {}
-    for element in header:
-        currency[element] = ""
 
     # count the number of "rows" in the call or put table
     xpath_table = '//*[@id="list-res-table"]/div[1]/table/tbody/tr'
@@ -245,7 +234,7 @@ def xml_table(xpath_table_header, xpath_table_body, xml):
 
     # this code should read all the headers and then print the header!
     xpath_table_header = '//*[@id="list-res-table"]/div[1]/table/thead/tr/th'
-    num_lables = len(xml.findall('.' + xpath_table_header))
+    table_colums = len(xml.findall('.' + xpath_table_header))
     labels = xml.findall('.' + xpath_table_header)
     header = []
     for label in labels: 
@@ -257,19 +246,36 @@ def xml_table(xpath_table_header, xpath_table_body, xml):
     #end = xpath_table_header.rfind("tr/")
     #xpath_table = xpath_table_header[:end+2]
     #table_rows = len(xml.findall('.' + xpath_table))
-"""
+
     # print each label for each row
     table_rows = len(xml.findall('.' + xpath_table_body))
     for row in range(1, table_rows+1):
         for element in range(0, len(header)):
             xpath_name = '//*[@id="list-res-table"]/div[1]/table/tbody/tr['+ str(row) +']/td['+ str(element+1) +']'
-            if xml.find('.' + xpath_name) == None:
-                xpath_name = '//*[@id="list-res-table"]/div[1]/table/tbody/tr['+ str(row) +']/td['+ str(element+1) +']/a'
-            name = xml.find('.' + xpath_name).text
-            print (header[element] + " " + name)
 
+            # first //*[@id="list-res-table"]/div[1]/table/tbody/tr[1]/td[1]/a 
+
+            if xml.find('.' + xpath_name).text != None:
+                print (xml.find('.' + xpath_name).text)
+            else: 
+                for child in xml.findall('.' + xpath_name + "/*"):
+                    if child.text != None:
+                        print (child.text)
+
+            """
+            if xml.find('.' + xpath_name).text != None:
+                name = xml.find('.' + xpath_name).text
+                print (header[element] + " " + name)
+                # //*[@id="list-res-table"]/div[1]/table/tbody/tr[2]/td[1]/a
+                # //*[@id="list-res-table"]/div[1]/table/tbody/tr[1]/td[1]/a
+                # //*[@id="list-res-table"]/div[1]/table/tbody/tr[1]/td[3]/fin-streamer
+                # //*[@id="list-res-table"]/div[1]/table/tbody/tr[1]/td[5]/fin-streamer/span
+            elif xml.find('.' + xpath_name + "/fin-streamer").text != None:
+                name = xml.find('.' + xpath_name + "/fin-streamer").text
+                print (header[element] + " " + name)
+            """
             # //*[@id="list-res-table"]/div[1]/table/tbody/tr[1]/td[3]/fin-streamer //*[@id="list-res-table"]/div[1]/table/tbody/tr[1]/td[4]/fin-streamer/span
-"""
+
 def world_indices_check():
     # WORLD INDICES
     print("World Stock Market Indices")
