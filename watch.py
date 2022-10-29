@@ -254,13 +254,21 @@ def xml_table(xpath_table_header, xpath_table_body, xml):
             xpath_name = '//*[@id="list-res-table"]/div[1]/table/tbody/tr['+ str(row) +']/td['+ str(element+1) +']'
 
             # first //*[@id="list-res-table"]/div[1]/table/tbody/tr[1]/td[1]/a 
-
             if xml.find('.' + xpath_name).text != None:
                 print (xml.find('.' + xpath_name).text)
             else: 
-                for child in xml.findall('.' + xpath_name + "/*"):
-                    if child.text != None:
-                        print (child.text)
+                children = xml.findall('.' + xpath_name + "/*")
+                while children:
+                    for child in children:
+                        if child.text != None:
+                            print (child.text)
+                            children = None
+                            break
+                        elif child.tag != None:
+                            xpath_name += "/" + child.tag
+                            children = xml.findall('.' + xpath_name + "/*")
+                        else:
+                            break 
 
             """
             if xml.find('.' + xpath_name).text != None:
