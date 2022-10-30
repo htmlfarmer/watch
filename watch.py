@@ -270,16 +270,19 @@ def print_sub_trees(tree):
         if tree.attrib != {}:
             links[tree.attrib["title"]] = "https://en.wikipedia.org" + tree.attrib["href"]
     for sub_tree in tree.findall('.' + "/*"):
-        print_sub_trees(sub_tree)
         if sub_tree.attrib != {}:
             links[sub_tree.attrib["title"]] = "https://en.wikipedia.org" + sub_tree.attrib["href"]
+        links = Merge(links, print_sub_trees(sub_tree))
     if tree.tail != None:
         print (tree.tail, end="")
         if tree.attrib != {}:
             links[tree.attrib["title"]] = "https://en.wikipedia.org" + tree.attrib["href"]
         
     return links
-        
+
+def Merge(dict1, dict2):
+    return {**dict1, **dict2}
+
 # check currency on yahoo!
 def currency_check():
     print("World Currencies")
