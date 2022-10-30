@@ -255,15 +255,13 @@ def print_sub_trees(tree):
 
     if tree.text != None:
         print (tree.text)
-        for sub_tree in tree.findall('.' + "/*"):
-            print_sub_trees(sub_tree)
-    else:
-        for sub_tree in tree.findall('.' + "/*"):
-            print_sub_trees(sub_tree)
-        return
+    for sub_tree in tree.findall('.' + "/*"):
+        print_sub_trees(sub_tree)
+    if tree.tail != None:
+        print (tree.tail)
+    return
         
-
-
+# check currency on yahoo!
 def currency_check():
     print("World Currencies")
     currencies = "https://finance.yahoo.com/currencies/"
