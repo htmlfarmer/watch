@@ -28,6 +28,8 @@ symbols_to_watch = ["pbr", "vale"]
 def watch():
     time_date()
     check_wikipedia_news()
+    """
+    # note doesn't work because I added remove nav and remove footer code for wikipedia
     currency_check()
     world_indices_check()
 
@@ -39,6 +41,7 @@ def watch():
         get_option(symbol, "call")
         print("watch puts: ")
         get_option(symbol, "put")
+    """
 
 def quote(symbol):
     quote_url = "https://finance.yahoo.com/quote/"+symbol
@@ -187,12 +190,30 @@ def xpath_text(website, xpath):
 def get_xml(url):
     text = REQUEST(url)
 
+    
     # (REMOVE <SCRIPT> to </script> and variations)
     pattern = r'<[ ]*script.*?\/[ ]*script[ ]*>'  # mach any char zero or more times
     text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
 
     # (REMOVE HTML <STYLE> to </style> and variations)
     pattern = r'<[ ]*style.*?\/[ ]*style[ ]*>'  # mach any char zero or more times
+    text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
+
+    # (REMOVE HTML <NAV> to </nav> and variations)
+    pattern = r'<[ ]*nav.*?\/[ ]*nav[ ]*>'  # mach any char zero or more times
+    text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
+
+    # (REMOVE HTML <NAV> to </nav> and variations)
+    pattern = r'<[ ]*form.*?\/[ ]*form[ ]*>'  # mach any char zero or more times
+    text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
+
+    # (REMOVE HTML <footer> to </footer> and variations)
+    pattern = r'<[ ]*footer.*?\/[ ]*footer[ ]*>'  # mach any char zero or more times
+    text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
+
+    # for some reason wikipedia has a bug in the XML code
+    # (REMOVE HTML <a class="mw-wiki-logo> to </a> and variations)
+    pattern = r'<[ ]*a class="mw-wiki-logo".*?\/[ ]*a[ ]*>'  # mach any char zero or more times
     text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
 
     # (REMOVE HTML <META> to </meta> and variations)
@@ -210,6 +231,10 @@ def get_xml(url):
     # for some reason & is not a valid char in XML parse
     text = text.replace('&', '&amp;')
 
+    # for some reason some XML files have \n's in them and too long lines!
+    text = text.replace('\n', '')
+    text = text.replace('\t', '')
+
     # HTML/XML is now "clean" so we can create an binary XML tree
     parser = ElementTree.XMLParser(encoding="utf-8")
     xml = ElementTree.fromstring(text, parser=parser)
@@ -219,8 +244,25 @@ def check_wikipedia_news():
     print("Checking Wikipedia News")
     wikipedia = "https://en.wikipedia.org/wiki/Portal:Current_events"
     print("loading wikipedia")
-    #text = get_xml(wikipedia) #note there is a bug when parsing the wikipedia pages!
+    xml = get_xml(wikipedia) #note there is a bug when parsing the wikipedia pages!
     print("recieved!")
+    xpath_latest_news = '//*[@id="mw-content-text"]/div[1]/div[2]/div[4]/ul'
+    news_tree = xml.findall('.' + xpath_latest_news + "/*")
+    for story in news_tree:
+        print_sub_trees(story)
+
+def print_sub_trees(tree):
+
+    if tree.text != None:
+        print (tree.text)
+        for sub_tree in tree.findall('.' + "/*"):
+            print_sub_trees(sub_tree)
+    else:
+        for sub_tree in tree.findall('.' + "/*"):
+            print_sub_trees(sub_tree)
+        return
+        
+
 
 def currency_check():
     print("World Currencies")
