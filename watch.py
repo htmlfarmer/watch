@@ -28,9 +28,10 @@ symbols_to_watch = ["pbr", "vale"]
 def watch():
     time_date()
     check_wikipedia_news()
-    """
+    
     # note doesn't work because I added remove nav and remove footer code for wikipedia
-    currency_check()
+    #currency_check()
+    """
     world_indices_check()
 
     for symbol in symbols_to_watch:
@@ -203,6 +204,10 @@ def get_xml(url):
     pattern = r'<[ ]*nav.*?\/[ ]*nav[ ]*>'  # mach any char zero or more times
     text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
 
+    # (REMOVE </nav> and variations for some reason I have some that remain!?)
+    pattern = r'<[ ]*\/[ ]*nav[ ]*>'  # mach any char zero or more times
+    text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
+
     # (REMOVE HTML <NAV> to </nav> and variations)
     pattern = r'<[ ]*form.*?\/[ ]*form[ ]*>'  # mach any char zero or more times
     text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
@@ -232,8 +237,8 @@ def get_xml(url):
     text = text.replace('&', '&amp;')
 
     # for some reason some XML files have \n's in them and too long lines!
-    text = text.replace('\n', '')
-    text = text.replace('\t', '')
+    #text = text.replace('\n', '')
+    #text = text.replace('\t', '')
 
     # HTML/XML is now "clean" so we can create an binary XML tree
     parser = ElementTree.XMLParser(encoding="utf-8")
