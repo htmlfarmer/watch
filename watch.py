@@ -250,15 +250,16 @@ def check_wikipedia_news():
     news_tree = xml.findall('.' + xpath_latest_news + "/*")
     for story in news_tree:
         print_sub_trees(story)
+        print ("")
 
 def print_sub_trees(tree):
 
     if tree.text != None:
-        print (tree.text)
+        print (tree.text, end="")
     for sub_tree in tree.findall('.' + "/*"):
         print_sub_trees(sub_tree)
     if tree.tail != None:
-        print (tree.tail)
+        print (tree.tail, end="")
     return
         
 # check currency on yahoo!
