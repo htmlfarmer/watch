@@ -31,9 +31,9 @@ def watch():
     
     # note doesn't work because I added remove nav and remove footer code for wikipedia
     #currency_check()
+    #world_indices_check()
+    
     """
-    world_indices_check()
-
     for symbol in symbols_to_watch:
         quote(symbol)
 
@@ -191,7 +191,6 @@ def xpath_text(website, xpath):
 def get_xml(url):
     text = REQUEST(url)
 
-    
     # (REMOVE <SCRIPT> to </script> and variations)
     pattern = r'<[ ]*script.*?\/[ ]*script[ ]*>'  # mach any char zero or more times
     text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
@@ -221,6 +220,10 @@ def get_xml(url):
     pattern = r'<[ ]*a class="mw-wiki-logo".*?\/[ ]*a[ ]*>'  # mach any char zero or more times
     text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
 
+    # <div id="Overlay-2-Empty-Proxy" data-reactroot="">
+    pattern = r'<[ ]*div id="Overlay.*?\/[ ]*div[ ]*>'  # mach any char zero or more times
+    text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
+
     # (REMOVE HTML <META> to </meta> and variations)
     pattern = r'<[ ]*meta.*?>'  # mach any char zero or more times
     text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
@@ -237,8 +240,8 @@ def get_xml(url):
     text = text.replace('&', '&amp;')
 
     # for some reason some XML files have \n's in them and too long lines!
-    #text = text.replace('\n', '')
-    #text = text.replace('\t', '')
+    text = text.replace('\n', '')
+    text = text.replace('\t', '')
 
     # HTML/XML is now "clean" so we can create an binary XML tree
     parser = ElementTree.XMLParser(encoding="utf-8")
@@ -254,18 +257,28 @@ def check_wikipedia_news():
     xpath_latest_news = '//*[@id="mw-content-text"]/div[1]/div[2]/div[4]/ul'
     news_tree = xml.findall('.' + xpath_latest_news + "/*")
     for story in news_tree:
-        print_sub_trees(story)
+        links = print_sub_trees(story)
         print ("")
+        print (links)
+
 
 def print_sub_trees(tree):
-
+    links = {}
+    story = ""
     if tree.text != None:
         print (tree.text, end="")
+        if tree.attrib != {}:
+            links[tree.attrib["title"]] = "https://en.wikipedia.org" + tree.attrib["href"]
     for sub_tree in tree.findall('.' + "/*"):
         print_sub_trees(sub_tree)
+        if sub_tree.attrib != {}:
+            links[sub_tree.attrib["title"]] = "https://en.wikipedia.org" + sub_tree.attrib["href"]
     if tree.tail != None:
         print (tree.tail, end="")
-    return
+        if tree.attrib != {}:
+            links[tree.attrib["title"]] = "https://en.wikipedia.org" + tree.attrib["href"]
+        
+    return links
         
 # check currency on yahoo!
 def currency_check():
