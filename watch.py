@@ -191,50 +191,14 @@ def xpath_text(website, xpath):
 def get_xml(url):
     text = REQUEST(url)
 
-    # (REMOVE <SCRIPT> to </script> and variations)
-    pattern = r'<[ ]*script.*?\/[ ]*script[ ]*>'  # mach any char zero or more times
-    text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
+    patterns = [r'<[ ]*\![ ]*DOCTYPE.*?>', r'<[ ]*style.*?\/[ ]*style[ ]*>', \
+        r'<[ ]*script.*?\/[ ]*script[ ]*>', r'<[ ]*style.*?\/[ ]*style[ ]*>', \
+            r'<[ ]*nav.*?\/[ ]*nav[ ]*>', r'<[ ]*\/[ ]*nav[ ]*>', r'<[ ]*form.*?\/[ ]*form[ ]*>', \
+                r'<[ ]*footer.*?\/[ ]*footer[ ]*>', r'<[ ]*a class="mw-wiki-logo".*?\/[ ]*a[ ]*>', \
+                    r'<[ ]*div id="Overlay.*?\/[ ]*div[ ]*>', r'<[ ]*meta.*?>']
 
-    # (REMOVE HTML <STYLE> to </style> and variations)
-    pattern = r'<[ ]*style.*?\/[ ]*style[ ]*>'  # mach any char zero or more times
-    text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
-
-    # (REMOVE HTML <NAV> to </nav> and variations)
-    pattern = r'<[ ]*nav.*?\/[ ]*nav[ ]*>'  # mach any char zero or more times
-    text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
-
-    # (REMOVE </nav> and variations for some reason I have some that remain!?)
-    pattern = r'<[ ]*\/[ ]*nav[ ]*>'  # mach any char zero or more times
-    text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
-
-    # (REMOVE HTML <NAV> to </nav> and variations)
-    pattern = r'<[ ]*form.*?\/[ ]*form[ ]*>'  # mach any char zero or more times
-    text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
-
-    # (REMOVE HTML <footer> to </footer> and variations)
-    pattern = r'<[ ]*footer.*?\/[ ]*footer[ ]*>'  # mach any char zero or more times
-    text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
-
-    # for some reason wikipedia has a bug in the XML code
-    # (REMOVE HTML <a class="mw-wiki-logo> to </a> and variations)
-    pattern = r'<[ ]*a class="mw-wiki-logo".*?\/[ ]*a[ ]*>'  # mach any char zero or more times
-    text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
-
-    # <div id="Overlay-2-Empty-Proxy" data-reactroot="">
-    pattern = r'<[ ]*div id="Overlay.*?\/[ ]*div[ ]*>'  # mach any char zero or more times
-    text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
-
-    # (REMOVE HTML <META> to </meta> and variations)
-    pattern = r'<[ ]*meta.*?>'  # mach any char zero or more times
-    text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
-
-    # (REMOVE HTML COMMENTS <!-- to --> and variations)
-    pattern = r'<[ ]*!--.*?--[ ]*>'  # mach any char zero or more times
-    text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
-
-    # (REMOVE HTML DOCTYPE <!DOCTYPE html to > and variations)
-    pattern = r'<[ ]*\![ ]*DOCTYPE.*?>'  # mach any char zero or more times
-    text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
+    for pattern in patterns:
+        text = re.sub(pattern, '', text, flags=(re.IGNORECASE | re.MULTILINE | re.DOTALL))
 
     # for some reason & is not a valid char in XML parse
     text = text.replace('&', '&amp;')
@@ -260,6 +224,7 @@ def check_wikipedia_news():
         links = print_sub_trees(story)
         print ("")
         print (links)
+        print("")
 
 
 def print_sub_trees(tree):
