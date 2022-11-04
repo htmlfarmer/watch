@@ -6,6 +6,8 @@ import re
 from file import READ
 from website import Website
 
+from bs4 import BeautifulSoup
+
 # World Stock Market Watch (Quotes + Indices + Currency) (Python)
 # by Asher Martin
 # Date: October 2022
@@ -13,12 +15,6 @@ from website import Website
 # IDEAS FOR FURTHER PROJECTS
 # TODO setup NLP natural language processing
 # TODO setup GUI interface with Python! 
-
-# url = "https://www.google.com/search?q=INDEXSP:.INX"
-# url = "https://finance.yahoo.com/quote/%5EGSPC?p=^GSPC"
-# url = "https://finance.yahoo.com/quote/PBR?p=PBR&.tsrc=fin-srch"
-# url = "https://finance.yahoo.com/quote/TSLA?p=TSLA&.tsrc=fin-srch"
-# xpath_google_quote = './/*[@id="knowledge-finance-wholepage__entity-summary"]/div/g-card-section/div/g-card-section/span[1]/span/span'
 
 symbols_to_watch = ["ttm", "tsla", "msft", "googl"]
 symbols_to_watch = ["chu", "ytra", "pbr"]
@@ -186,14 +182,16 @@ def xpath_text(website, xpath):
     else:
         return None
 
+def get_html(url):
+    return REQUEST(url)
 
 # watch a url
 def get_xml(url):
     text = REQUEST(url)
 
-    patterns = [r'<[ ]*\![ ]*DOCTYPE.*?>', r'<[ ]*style.*?\/[ ]*style[ ]*>', \
-        r'<[ ]*script.*?\/[ ]*script[ ]*>', r'<[ ]*style.*?\/[ ]*style[ ]*>', \
-            r'<[ ]*nav.*?\/[ ]*nav[ ]*>', r'<[ ]*\/[ ]*nav[ ]*>', r'<[ ]*form.*?\/[ ]*form[ ]*>', \
+    patterns = [r'<[ ]*\![ ]*DOCTYPE.*?>', r'<[ ]*script.*?\/[ ]*script[ ]*>', \
+        r'<[ ]*style.*?\/[ ]*style[ ]*>', r'<[ ]*nav.*?\/[ ]*nav[ ]*>', \
+            r'<[ ]*\/[ ]*nav[ ]*>', r'<[ ]*form.*?\/[ ]*form[ ]*>', \
                 r'<[ ]*footer.*?\/[ ]*footer[ ]*>', r'<[ ]*a class="mw-wiki-logo".*?\/[ ]*a[ ]*>', \
                     r'<[ ]*div id="Overlay.*?\/[ ]*div[ ]*>', r'<[ ]*meta.*?>']
 
@@ -216,6 +214,16 @@ def check_wikipedia_news():
     print("Checking Wikipedia News")
     wikipedia = "https://en.wikipedia.org/wiki/Portal:Current_events"
     print("loading wikipedia")
+    html = get_html(wikipedia)
+    soup = BeautifulSoup(html, 'html.parser')
+    print("bs ready!")
+    # 
+    # CSS selector
+    elems = soup.select('#mw-content-text > div.mw-parser-output > div.p-current-events > div.p-current-events-headlines > ul > li:nth-child(1)')
+
+    # take content and store in variable
+    content = elems[0].text.strip()
+    """
     xml = get_xml(wikipedia) #note there is a bug when parsing the wikipedia pages!
     print("recieved!")
     xpath_latest_news = '//*[@id="mw-content-text"]/div[1]/div[2]/div[4]/ul'
@@ -225,7 +233,7 @@ def check_wikipedia_news():
         print ("")
         print (links)
         print("")
-
+    """
 
 def print_sub_trees(tree):
     links = {}
