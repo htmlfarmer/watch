@@ -224,6 +224,11 @@ def check_wikipedia_news():
     for element in elements:
         content = element.text.strip()
         print(content)
+        for link in element.find_all('a'):
+            print(link["title"])
+            print("https://en.wikipedia.org" + link["href"])
+            
+        
     """
     xml = get_xml(wikipedia) #note there is a bug when parsing the wikipedia pages!
     print("recieved!")
