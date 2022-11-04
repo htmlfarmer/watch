@@ -219,10 +219,11 @@ def check_wikipedia_news():
     print("bs ready!")
     # 
     # CSS selector
-    elems = soup.select('#mw-content-text > div.mw-parser-output > div.p-current-events > div.p-current-events-headlines > ul > li:nth-child(1)')
+    elements = soup.select('#mw-content-text > div.mw-parser-output > div.p-current-events > div.p-current-events-headlines > ul > li')
 
-    # take content and store in variable
-    content = elems[0].text.strip()
+    for element in elements:
+        content = element.text.strip()
+        print(content)
     """
     xml = get_xml(wikipedia) #note there is a bug when parsing the wikipedia pages!
     print("recieved!")
