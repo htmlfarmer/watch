@@ -23,8 +23,8 @@ symbols_to_watch = ["pbr", "vale"]
 # Here is the main program that "watches" the internet for me!
 def watch():
     time_date()
-    check_wikipedia_news()
-    currencies()
+    #check_wikipedia_news()
+    #currencies()
     
     # note doesn't work because I added remove nav and remove footer code for wikipedia
     #currency_check()
@@ -42,21 +42,42 @@ def watch():
     """
 
 def quote(symbol):
+    stock = {}
+    stock["ticker"] = symbol
     quote_url = "https://finance.yahoo.com/quote/"+symbol
     quate_stats = "https://finance.yahoo.com/quote/" + symbol + "/key-statistics?p=" + symbol
     soup_quote = get_soup(quote_url)
     quotes = soup_quote.select("#quote-summary")[0].find_all('td')
-    for quote in quotes:
-        print(quote.text)
-    soup_stats = get_soup(quate_stats)
- 
-    clock = datetime.datetime.now()
-    #milliseconds = str(clock.time())
-    time = clock.time().strftime('%H:%M:%S')
-    date = str(datetime.date.today().strftime("%B")) + " " \
-          + str(datetime.date.today().strftime("%d")) + ", " \
-          + str(datetime.date.today().strftime("%Y"))
-    stock = {"bid" : "", "bid_volume" : ""}
+    # typical length of quotes is 32
+    stock["price"] = soup_quote.select("#quote-header-info")[0].find_all("fin-streamer")[0].text
+    stock["after_hours"] = soup_quote.select("#quote-header-info")[0].find_all("fin-streamer")[6].text
+    stock["closePrice"] = quotes[1].text
+    stock["openPrice"] = quotes[3].text
+    stock["bid"] = quotes[5].text.split('x')[0].replace(" ", "")
+    stock["bidSize"] = quotes[5].text.split('x')[1].replace(" ", "")
+    stock["ask"] = quotes[7].text.split('x')[0].replace(" ", "")
+    stock["askSize"] = quotes[7].text.split('x')[1].replace(" ", "")
+    stock["dayHigh"] = quotes[9].text.split('-')[1].replace(" ", "")
+    stock["dayLow"] = quotes[9].text.split('-')[0].replace(" ", "")
+    stock["52High"] = quotes[11].text.split('-')[1].replace(" ", "")
+    stock["52Low"] = quotes[11].text.split('-')[0].replace(" ", "")
+    stock["volume"] = quotes[13].text.replace(",", "")
+    stock["avgVolume"] = quotes[15].text.replace(",", "")
+    stock["marketCap"] = quotes[17].text
+    stock["beta"] = quotes[19].text
+    stock["pe"] = quotes[21].text
+    stock["eps"] = quotes[23].text
+    stock["earningsDate"] = quotes[25].text
+    stock["dividend"] = quotes[27].text.split('(')[0].replace(" ", "")
+    stock["yield"] = quotes[27].text.split('(')[1].replace(")", "").replace(" ", "")
+    stock["exdifidendDate"] = quotes[29].text
+    stock["target"] = quotes[31].text
+
+    #for quote in quotes:
+    #    print(quote.text)
+    
+    #todo soup_stats = get_soup(quate_stats)
+
     print(stock)
 
 def quote_old(symbol):
