@@ -24,16 +24,16 @@ symbols_to_watch = ["pbr", "vale"]
 def watch():
     time_date()
     #check_wikipedia_news()
-    currencies()
+    #currencies()
     
     # note doesn't work because I added remove nav and remove footer code for wikipedia
     #currency_check()
     #world_indices_check()
     
-    """
     for symbol in symbols_to_watch:
         quote(symbol)
 
+    """
     for symbol in symbols_to_watch:
         print("watch calls: ")
         get_option(symbol, "call")
@@ -42,6 +42,24 @@ def watch():
     """
 
 def quote(symbol):
+    quote_url = "https://finance.yahoo.com/quote/"+symbol
+    quate_stats = "https://finance.yahoo.com/quote/" + symbol + "/key-statistics?p=" + symbol
+    soup_quote = get_soup(quote_url)
+    quotes = soup_quote.select("#quote-summary > div.D\(ib\).W\(1\/2\).Bxz\(bb\).Pend\(12px\).Va\(t\).ie-7_D\(i\).smartphone_D\(b\).smartphone_W\(100\%\).smartphone_Pend\(0px\).smartphone_BdY.smartphone_Bdc\(\$seperatorColor\) > table > tbody > tr")
+    for quote in quotes:
+        print(quote.find_all('td')[1].text)
+    soup_stats = get_soup(quate_stats)
+ 
+    clock = datetime.datetime.now()
+    #milliseconds = str(clock.time())
+    time = clock.time().strftime('%H:%M:%S')
+    date = str(datetime.date.today().strftime("%B")) + " " \
+          + str(datetime.date.today().strftime("%d")) + ", " \
+          + str(datetime.date.today().strftime("%Y"))
+    stock = {"bid" : "", "bid_volume" : ""}
+    print(stock)
+
+def quote_old(symbol):
     quote_url = "https://finance.yahoo.com/quote/"+symbol
     quate_stats = "https://finance.yahoo.com/quote/" + symbol + "/key-statistics?p=" + symbol
     xml = get_xml(quote_url)
@@ -279,9 +297,6 @@ def currencies():
         for value in element.select('td'):
             print(value.text + " ", end="")
         print("")
-        #for link in element.find_all('a'):
-        #    print(link["title"])
-        #    print("https://en.wikipedia.org" + link["href"])
 
 # check currency on yahoo!
 def currency_check():
