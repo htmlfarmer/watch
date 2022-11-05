@@ -16,9 +16,7 @@ from bs4 import BeautifulSoup
 # TODO setup NLP natural language processing
 # TODO setup GUI interface with Python! 
 
-symbols_to_watch = ["ttm", "tsla", "msft", "googl"]
-symbols_to_watch = ["chu", "ytra", "pbr"]
-symbols_to_watch = ["pbr", "vale"]
+symbols_to_watch = ["pbr", "vale", "intc", "ttm", "goog"]
 
 # Here is the main program that "watches" the internet for me!
 def watch():
@@ -49,6 +47,9 @@ def quote(symbol):
     soup_quote = get_soup(quote_url)
     quotes = soup_quote.select("#quote-summary")[0].find_all('td')
     # typical length of quotes is 32
+    # get the stock name
+    # #quote-header-info > div.Mt\(15px\).D\(f\).Pos\(r\) > div.D\(ib\).Mt\(-5px\).Maw\(38\%\)--tab768.Maw\(38\%\).Mend\(10px\).Ov\(h\).smartphone_Maw\(85\%\).smartphone_Mend\(0px\) > div.D\(ib\) > h1
+    stock["name"] = soup_quote.select("#quote-header-info")[0].find_all("h1")[0].text
     stock["price"] = soup_quote.select("#quote-header-info")[0].find_all("fin-streamer")[0].text
     stock["after_hours"] = soup_quote.select("#quote-header-info")[0].find_all("fin-streamer")[6].text
     stock["closePrice"] = quotes[1].text
