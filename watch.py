@@ -45,9 +45,9 @@ def quote(symbol):
     quote_url = "https://finance.yahoo.com/quote/"+symbol
     quate_stats = "https://finance.yahoo.com/quote/" + symbol + "/key-statistics?p=" + symbol
     soup_quote = get_soup(quote_url)
-    quotes = soup_quote.select("#quote-summary > div.D\(ib\).W\(1\/2\).Bxz\(bb\).Pend\(12px\).Va\(t\).ie-7_D\(i\).smartphone_D\(b\).smartphone_W\(100\%\).smartphone_Pend\(0px\).smartphone_BdY.smartphone_Bdc\(\$seperatorColor\) > table > tbody > tr")
+    quotes = soup_quote.select("#quote-summary")[0].find_all('td')
     for quote in quotes:
-        print(quote.find_all('td')[1].text)
+        print(quote.text)
     soup_stats = get_soup(quate_stats)
  
     clock = datetime.datetime.now()
