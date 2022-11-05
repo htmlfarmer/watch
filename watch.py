@@ -290,8 +290,8 @@ def currencies():
     soup = get_soup(currencies)
     print ("Website read successfully!")
 
-    elements = soup.select('#list-res-table > div.Ovx\(a\).Ovx\(h\)--print.Ovy\(h\).W\(100\%\) > table > tbody > tr')
-
+    #elements = soup.select('#list-res-table > div.Ovx\(a\).Ovx\(h\)--print.Ovy\(h\).W\(100\%\) > table > tbody > tr')
+    elements = soup.select("#list-res-table")[0].find_all('tr')
     for element in elements:
         content = element.text.strip()
         for value in element.select('td'):
