@@ -23,8 +23,8 @@ symbols_to_watch = ["pbr", "vale"]
 # Here is the main program that "watches" the internet for me!
 def watch():
     time_date()
-    #check_wikipedia_news()
-    #currencies()
+    check_wikipedia_news()
+    currencies()
     
     # note doesn't work because I added remove nav and remove footer code for wikipedia
     #currency_check()
