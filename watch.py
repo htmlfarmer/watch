@@ -7,6 +7,11 @@ from file import READ
 from website import Website
 
 from bs4 import BeautifulSoup
+from bs4.element import Comment
+
+import nltk
+from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk.corpus import stopwords
 
 # World Stock Market Watch (Quotes + Indices + Currency) (Python)
 # by Asher Martin
@@ -21,6 +26,7 @@ symbols_to_watch = ["pbr", "vale", "intc", "ttm", "goog"]
 # Here is the main program that "watches" the internet for me!
 def watch():
     time_date()
+    nlp()
     #check_wikipedia_news()
     #currencies()
     
@@ -38,6 +44,34 @@ def watch():
         print("watch puts: ")
         get_option(symbol, "put")
     """
+
+def tag_visible(element):
+    if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
+        return False
+    if isinstance(element, Comment):
+        return False
+    return True
+
+
+def text_from_html(body):
+    soup = BeautifulSoup(body, 'html.parser')
+    texts = soup.findAll(text=True)
+    visible_texts = filter(tag_visible, texts)  
+    return u" ".join(t.strip() for t in visible_texts)
+
+
+# the code orginally came from https://realpython.com/nltk-nlp-python/
+def nlp():
+    print("Checking Wikipedia News")
+    website = "https://en.wikipedia.org/wiki/Portal:Current_events"
+    print("loading wikipedia")
+    html = get_html(website)
+    text = text_from_html(html) #.encode('utf-8', errors='ignore').decode('utf-8')
+    sentinces = sent_tokenize(text)
+    sentince = word_tokenize(sentinces[0])
+    nlp = nltk.pos_tag(sentince)
+    print("done with NLP test!")
+
 
 def quote(symbol):
     stock = {}
