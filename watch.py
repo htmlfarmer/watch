@@ -23,7 +23,8 @@ symbols_to_watch = ["pbr", "vale"]
 # Here is the main program that "watches" the internet for me!
 def watch():
     time_date()
-    check_wikipedia_news()
+    #check_wikipedia_news()
+    currencies()
     
     # note doesn't work because I added remove nav and remove footer code for wikipedia
     #currency_check()
@@ -182,6 +183,10 @@ def xpath_text(website, xpath):
     else:
         return None
 
+def get_soup(url):
+    html = REQUEST(url)
+    return BeautifulSoup(html, 'html.parser')
+
 def get_html(url):
     return REQUEST(url)
 
@@ -214,9 +219,7 @@ def check_wikipedia_news():
     print("Checking Wikipedia News")
     wikipedia = "https://en.wikipedia.org/wiki/Portal:Current_events"
     print("loading wikipedia")
-    html = get_html(wikipedia)
-    soup = BeautifulSoup(html, 'html.parser')
-    print("bs ready!")
+    soup = get_soup(wikipedia)
     # 
     # CSS selector
     elements = soup.select('#mw-content-text > div.mw-parser-output > div.p-current-events > div.p-current-events-headlines > ul > li')
@@ -261,6 +264,24 @@ def print_sub_trees(tree):
 
 def Merge(dict1, dict2):
     return {**dict1, **dict2}
+
+def currencies():
+    print("World Currencies")
+    currencies = "https://finance.yahoo.com/currencies/"
+    print("checking website: " + currencies)
+    soup = get_soup(currencies)
+    print ("Website read successfully!")
+
+    elements = soup.select('#list-res-table > div.Ovx\(a\).Ovx\(h\)--print.Ovy\(h\).W\(100\%\) > table > tbody > tr')
+
+    for element in elements:
+        content = element.text.strip()
+        for value in element.select('td'):
+            print(value.text + " ", end="")
+        print("")
+        #for link in element.find_all('a'):
+        #    print(link["title"])
+        #    print("https://en.wikipedia.org" + link["href"])
 
 # check currency on yahoo!
 def currency_check():
