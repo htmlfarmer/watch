@@ -26,12 +26,9 @@ symbols_to_watch = ["pbr", "vale", "intc", "ttm", "goog"]
 # Here is the main program that "watches" the internet for me!
 def watch():
     time_date()
-    nlp()
+    #nlp()
     #check_wikipedia_news()
     #currencies()
-    
-    # note doesn't work because I added remove nav and remove footer code for wikipedia
-    #currency_check()
     #world_indices_check()
     
     for symbol in symbols_to_watch:
@@ -76,6 +73,8 @@ def nlp():
 def quote(symbol):
     stock = {}
     stock["ticker"] = symbol
+    stock["date"] = date()
+    stock["time"] = time()
     quote_url = "https://finance.yahoo.com/quote/"+symbol
     quate_stats = "https://finance.yahoo.com/quote/" + symbol + "/key-statistics?p=" + symbol
     soup_quote = get_soup(quote_url)
@@ -85,7 +84,8 @@ def quote(symbol):
     # #quote-header-info > div.Mt\(15px\).D\(f\).Pos\(r\) > div.D\(ib\).Mt\(-5px\).Maw\(38\%\)--tab768.Maw\(38\%\).Mend\(10px\).Ov\(h\).smartphone_Maw\(85\%\).smartphone_Mend\(0px\) > div.D\(ib\) > h1
     stock["name"] = soup_quote.select("#quote-header-info")[0].find_all("h1")[0].text
     stock["price"] = soup_quote.select("#quote-header-info")[0].find_all("fin-streamer")[0].text
-    stock["after_hours"] = soup_quote.select("#quote-header-info")[0].find_all("fin-streamer")[6].text
+    if len(soup_quote.select("#quote-header-info")[0].find_all("fin-streamer")) >= 7:
+        stock["after_hours"] = soup_quote.select("#quote-header-info")[0].find_all("fin-streamer")[6].text
     stock["closePrice"] = quotes[1].text
     stock["openPrice"] = quotes[3].text
     stock["bid"] = quotes[5].text.split('x')[0].replace(" ", "")
@@ -397,6 +397,12 @@ def time_date():
           + str(datetime.date.today().strftime("%d")) + ", " \
           + str(datetime.date.today().strftime("%Y")))
     print("===================================================")
+
+def date():
+    return str(datetime.date.today().strftime("%D"))
+
+def time():
+    return str(datetime.datetime.now().strftime("%H:%M:%S"))
 
 
 #run the program!
