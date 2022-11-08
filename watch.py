@@ -28,8 +28,8 @@ def watch():
     time_date()
     #nlp()
     #check_wikipedia_news()
-    currencies()
-    #world_indices_check()
+    #currencies()
+    world_indices_check()
     """
     for symbol in symbols_to_watch:
         quote(symbol)
@@ -107,13 +107,8 @@ def quote(symbol):
     stock["yield"] = quotes[27].text.split('(')[1].replace(")", "").replace(" ", "")
     stock["exdifidendDate"] = quotes[29].text
     stock["target"] = quotes[31].text
-
-    #for quote in quotes:
-    #    print(quote.text)
-    
-    #todo soup_stats = get_soup(quate_stats)
-
     print(stock)
+    return stock
 
 def buy(stock):
     print ("buy")
@@ -294,88 +289,34 @@ def currencies():
     print(world)
     return world
 
-# check currency on yahoo!
-def currency_check():
-    print("World Currencies")
-    currencies = "https://finance.yahoo.com/currencies/"
-    print("checking website: " + currencies)
-    xml = get_xml(currencies)
-    print ("Website read successfully!")
-
-    # this code should read all the headers and then print the header!
-    xpath_labels = '//*[@id="list-res-table"]/div[1]/table/thead/tr/th'
-
-    # count the number of "rows" in the call or put table
-    xpath_table = '//*[@id="list-res-table"]/div[1]/table/tbody/tr'
-    table_rows = len(xml.findall('.' + xpath_table))
-
-    xml_table(xpath_labels, xpath_table, xml)
-
-def xml_table(xpath_table_header, xpath_table_body, xml):
-
-    # this code should read all the headers and then print the header!
-    xpath_table_header = '//*[@id="list-res-table"]/div[1]/table/thead/tr/th'
-    table_colums = len(xml.findall('.' + xpath_table_header))
-    labels = xml.findall('.' + xpath_table_header)
-    header = []
-    for label in labels: 
-        header.append(label.text) 
-    print (header)
-
-    # count the number of "rows" in the call or put table
-    # todo add the code to search for the name of the body of the table.
-    #end = xpath_table_header.rfind("tr/")
-    #xpath_table = xpath_table_header[:end+2]
-    #table_rows = len(xml.findall('.' + xpath_table))
-
-    # print each label for each row
-    table_rows = len(xml.findall('.' + xpath_table_body))
-    for row in range(1, table_rows+1):
-        for element in range(0, len(header)):
-            xpath_name = '//*[@id="list-res-table"]/div[1]/table/tbody/tr['+ str(row) +']/td['+ str(element+1) +']'
-
-            # first //*[@id="list-res-table"]/div[1]/table/tbody/tr[1]/td[1]/a 
-            if xml.find('.' + xpath_name).text != None:
-                print (xml.find('.' + xpath_name).text)
-            else: 
-                children = xml.findall('.' + xpath_name + "/*")
-                while children:
-                    for child in children:
-                        if child.text != None:
-                            print (child.text)
-                            children = None
-                            break
-                        elif child.tag != None:
-                            xpath_name += "/" + child.tag
-                            children = xml.findall('.' + xpath_name + "/*")
-                        else:
-                            break 
-
-            """
-            if xml.find('.' + xpath_name).text != None:
-                name = xml.find('.' + xpath_name).text
-                print (header[element] + " " + name)
-                # //*[@id="list-res-table"]/div[1]/table/tbody/tr[2]/td[1]/a
-                # //*[@id="list-res-table"]/div[1]/table/tbody/tr[1]/td[1]/a
-                # //*[@id="list-res-table"]/div[1]/table/tbody/tr[1]/td[3]/fin-streamer
-                # //*[@id="list-res-table"]/div[1]/table/tbody/tr[1]/td[5]/fin-streamer/span
-            elif xml.find('.' + xpath_name + "/fin-streamer").text != None:
-                name = xml.find('.' + xpath_name + "/fin-streamer").text
-                print (header[element] + " " + name)
-            """
-            # //*[@id="list-res-table"]/div[1]/table/tbody/tr[1]/td[3]/fin-streamer //*[@id="list-res-table"]/div[1]/table/tbody/tr[1]/td[4]/fin-streamer/span
-
 def world_indices_check():
     # WORLD INDICES
     print("World Stock Market Indices")
     indices = "https://finance.yahoo.com/world-indices"
     print("checking: " + indices)
-    xml = get_xml(indices)
+    soup = get_soup(indices)
     print("Web Page Read (Success!)")
 
-    # count the number of "rows" in the call or put table
-    xpath_table = '//*[@id="list-res-table"]/div[1]/table/tbody/tr'
-    table_rows = len(xml.findall('.' + xpath_table))
+    indices = []
+    index = {}
+
+    # #list-res-table > div.Ovx\(a\).Ovx\(h\)--print.Ovy\(h\).W\(100\%\) > table > tbody > tr:nth-child(1) > td.Va\(m\).Ta\(start\).Pstart\(6px\).Start\(0\).Pend\(10px\).simpTblRow\:h_Bgc\(\$hoverBgColor\).Pos\(st\).Bgc\(\$lv3BgColor\).Z\(1\).Bgc\(\$lv2BgColor\).Ta\(start\)\!.Fz\(s\) > a
+    elements = soup.select("#list-res-table")[0].find_all('tr')
+
+    for element in elements:
+        if len(element.select('td')) > 0:
+            index["symbol"] = element.select('td')[0].text
+            index["date"] = date()
+            index["time"] = time()
+            index["name"] = element.select('td')[1].text
+            index["price"] = element.select('td')[2].text
+            index["change"] = element.select('td')[3].text
+            index["pctchange"] = element.select('td')[4].text
+        indices.append(index)
+        index = {}
+    del indices[0]
+    print(indices)
+    return indices
 
     # print each label for each row
     for row in range(1, table_rows+1):
