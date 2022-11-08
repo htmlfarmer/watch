@@ -28,12 +28,12 @@ def watch():
     time_date()
     #nlp()
     #check_wikipedia_news()
-    #currencies()
+    currencies()
     #world_indices_check()
-    
+    """
     for symbol in symbols_to_watch:
         quote(symbol)
-
+    """
     """
     for symbol in symbols_to_watch:
         print("watch calls: ")
@@ -245,19 +245,6 @@ def check_wikipedia_news():
         for link in element.find_all('a'):
             print(link["title"])
             print("https://en.wikipedia.org" + link["href"])
-            
-        
-    """
-    xml = get_xml(wikipedia) #note there is a bug when parsing the wikipedia pages!
-    print("recieved!")
-    xpath_latest_news = '//*[@id="mw-content-text"]/div[1]/div[2]/div[4]/ul'
-    news_tree = xml.findall('.' + xpath_latest_news + "/*")
-    for story in news_tree:
-        links = print_sub_trees(story)
-        print ("")
-        print (links)
-        print("")
-    """
 
 def print_sub_trees(tree):
     links = {}
@@ -287,13 +274,23 @@ def currencies():
     soup = get_soup(currencies)
     print ("Website read successfully!")
 
+    world = []
+    currency ={}
+
     #elements = soup.select('#list-res-table > div.Ovx\(a\).Ovx\(h\)--print.Ovy\(h\).W\(100\%\) > table > tbody > tr')
     elements = soup.select("#list-res-table")[0].find_all('tr')
     for element in elements:
-        content = element.text.strip()
-        for value in element.select('td'):
-            print(value.text + " ", end="")
-        print("")
+        if len(element.select('td')) > 0:
+            currency["symbol"] = element.select('td')[0].text
+            currency["name"] = element.select('td')[1].text
+            currency["price"] = element.select('td')[2].text
+            currency["change"] = element.select('td')[3].text
+            currency["pctchange"] = element.select('td')[4].text
+        world.append(currency)
+        currency = {}
+    del world[0]
+    print(world)
+    return world
 
 # check currency on yahoo!
 def currency_check():
