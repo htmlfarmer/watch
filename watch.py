@@ -282,6 +282,8 @@ def currencies():
     for element in elements:
         if len(element.select('td')) > 0:
             currency["symbol"] = element.select('td')[0].text
+            currency["date"] = date()
+            currency["time"] = time()
             currency["name"] = element.select('td')[1].text
             currency["price"] = element.select('td')[2].text
             currency["change"] = element.select('td')[3].text
