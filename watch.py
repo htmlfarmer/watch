@@ -29,11 +29,11 @@ def watch():
     #nlp()
     #check_wikipedia_news()
     #currencies()
-    world_indices_check()
-    """
+    #world_indices_check()
+    
     for symbol in symbols_to_watch:
         quote(symbol)
-    """
+    
     """
     for symbol in symbols_to_watch:
         print("watch calls: ")
@@ -76,37 +76,47 @@ def quote(symbol):
     stock["date"] = date()
     stock["time"] = time()
     quote_url = "https://finance.yahoo.com/quote/"+symbol
-    quate_stats = "https://finance.yahoo.com/quote/" + symbol + "/key-statistics?p=" + symbol
+    # todo add finance stats
+    #quate_stats = "https://finance.yahoo.com/quote/" + symbol + "/key-statistics?p=" + symbol
     soup_quote = get_soup(quote_url)
     quotes = soup_quote.select("#quote-summary")[0].find_all('td')
     # typical length of quotes is 32
     # get the stock name
-    # #quote-header-info > div.Mt\(15px\).D\(f\).Pos\(r\) > div.D\(ib\).Mt\(-5px\).Maw\(38\%\)--tab768.Maw\(38\%\).Mend\(10px\).Ov\(h\).smartphone_Maw\(85\%\).smartphone_Mend\(0px\) > div.D\(ib\) > h1
     stock["name"] = soup_quote.select("#quote-header-info")[0].find_all("h1")[0].text
-    stock["price"] = soup_quote.select("#quote-header-info")[0].find_all("fin-streamer")[0].text
+    # Float stores an approximate value and decimal stores an exact value. In summary, exact values like money should use decimal, and approximate values like scientific measurements should use float.
+    stock["price"] = float(soup_quote.select("#quote-header-info")[0].find_all("fin-streamer")[0].text.replace(",", ""))
     if len(soup_quote.select("#quote-header-info")[0].find_all("fin-streamer")) >= 7:
-        stock["after_hours"] = soup_quote.select("#quote-header-info")[0].find_all("fin-streamer")[6].text
-    stock["closePrice"] = quotes[1].text
-    stock["openPrice"] = quotes[3].text
-    stock["bid"] = quotes[5].text.split('x')[0].replace(" ", "")
-    stock["bidSize"] = quotes[5].text.split('x')[1].replace(" ", "")
-    stock["ask"] = quotes[7].text.split('x')[0].replace(" ", "")
-    stock["askSize"] = quotes[7].text.split('x')[1].replace(" ", "")
-    stock["dayHigh"] = quotes[9].text.split('-')[1].replace(" ", "")
-    stock["dayLow"] = quotes[9].text.split('-')[0].replace(" ", "")
-    stock["52High"] = quotes[11].text.split('-')[1].replace(" ", "")
-    stock["52Low"] = quotes[11].text.split('-')[0].replace(" ", "")
-    stock["volume"] = quotes[13].text.replace(",", "")
-    stock["avgVolume"] = quotes[15].text.replace(",", "")
+        stock["after_hours"] = float(soup_quote.select("#quote-header-info")[0].find_all("fin-streamer")[6].text.replace(",", ""))
+    stock["closePrice"] = float(quotes[1].text.replace(",", ""))
+    stock["openPrice"] = float(quotes[3].text.replace(",", ""))
+    stock["bid"] = float(quotes[5].text.split('x')[0].replace(" ", "").replace(",", ""))
+    stock["bidSize"] = int(quotes[5].text.split('x')[1].replace(" ", "").replace(",", ""))
+    stock["ask"] = float(quotes[7].text.split('x')[0].replace(" ", "").replace(",", ""))
+    stock["askSize"] = int(quotes[7].text.split('x')[1].replace(" ", "").replace(",", ""))
+    stock["dayHigh"] = float(quotes[9].text.split('-')[1].replace(" ", "").replace(",", ""))
+    stock["dayLow"] = float(quotes[9].text.split('-')[0].replace(" ", "").replace(",", ""))
+    stock["52High"] = float(quotes[11].text.split('-')[1].replace(" ", "").replace(",", ""))
+    stock["52Low"] = float(quotes[11].text.split('-')[0].replace(" ", "").replace(",", ""))
+    stock["volume"] = int(quotes[13].text.replace(",", ""))
+    stock["avgVolume"] = int(quotes[15].text.replace(",", ""))
     stock["marketCap"] = quotes[17].text
-    stock["beta"] = quotes[19].text
-    stock["pe"] = quotes[21].text
-    stock["eps"] = quotes[23].text
+    if "." in quotes[19].text:
+        stock["beta"] = float(quotes[19].text)
+    else:
+        stock["beta"] = ""
+    if "." in quotes[21].text:
+        stock["pe"] = float(quotes[21].text)
+    else:
+        stock["pe"] = ""
+    stock["eps"] = float(quotes[23].text)
     stock["earningsDate"] = quotes[25].text
-    stock["dividend"] = quotes[27].text.split('(')[0].replace(" ", "")
-    stock["yield"] = quotes[27].text.split('(')[1].replace(")", "").replace(" ", "")
+    if "." in quotes[27].text:
+        stock["dividend"] = float(quotes[27].text.split('(')[0].replace(" ", "").replace(",", ""))
+    else:
+        stock["dividend"] = ""
+    stock["yield"] = quotes[27].text.split('(')[1].replace(")", "").replace(" ", "").replace(",", "")
     stock["exdifidendDate"] = quotes[29].text
-    stock["target"] = quotes[31].text
+    stock["target"] = float(quotes[31].text.replace(",", ""))
     print(stock)
     return stock
 
@@ -317,17 +327,6 @@ def world_indices_check():
     del indices[0]
     print(indices)
     return indices
-
-    # print each label for each row
-    for row in range(1, table_rows+1):
-        xpath_symbol = '//*[@id="list-res-table"]/div[1]/table/tbody/tr['+ str(row) +']/td[1]/a'
-        symbol = xml.find('.' + xpath_symbol).text
-        xpath_name = '//*[@id="list-res-table"]/div[1]/table/tbody/tr['+ str(row) +']/td[2]'
-        name = xml.find('.' + xpath_name).text
-        xpath_price = '//*[@id="list-res-table"]/div[1]/table/tbody/tr['+ str(row) +']/td[3]/fin-streamer'
-        price = xml.find('.' + xpath_price).text
-        print (name + " (" + symbol + ") : " + price)
-
 
 # print a header showing all the details of when the transaction takes place
 def time_date():
