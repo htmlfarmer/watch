@@ -27,9 +27,9 @@ symbols_to_watch = ["pbr", "vale", "intc", "ttm", "goog"]
 def watch():
     time_date()
     #nlp()
-    #check_wikipedia_news()
-    #currencies()
-    #world_indices_check()
+    check_wikipedia_news()
+    currencies()
+    world_indices_check()
     
     for symbol in symbols_to_watch:
         quote(symbol)
