@@ -10,6 +10,7 @@ from bs4 import BeautifulSoup
 from bs4.element import Comment
 
 import nltk
+from nltk import punkt
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
 
