@@ -29,8 +29,8 @@ def watch():
     time_date()
     #nlp()
     #check_wikipedia_news()
-    currencies()
-    #world_indices_check()
+    #currencies()
+    world_indices_check()
     
     for symbol in symbols_to_watch:
         quote(symbol)
@@ -320,9 +320,9 @@ def world_indices_check():
             index["date"] = date()
             index["time"] = time()
             index["name"] = element.select('td')[1].text
-            index["price"] = element.select('td')[2].text
-            index["change"] = element.select('td')[3].text
-            index["pctchange"] = element.select('td')[4].text
+            index["price"] = float(element.select('td')[2].text.replace("+", "").replace(",", ""))
+            index["change"] = float(element.select('td')[3].text.replace("+", "").replace(",", ""))
+            index["pctchange"] = float(element.select('td')[4].text.replace("+", "").replace("%", ""))
         indices.append(index)
         index = {}
     del indices[0]
