@@ -329,62 +329,6 @@ def print_sub_trees(tree):
 def Merge(dict1, dict2):
     return {**dict1, **dict2}
 
-def currencies():
-    print("World Currencies")
-    currencies = "https://finance.yahoo.com/currencies/"
-    print("checking website: " + currencies)
-    soup = get_soup(currencies)
-    print ("Website read successfully!")
-
-    world = []
-    currency ={}
-
-    #elements = soup.select('#list-res-table > div.Ovx\(a\).Ovx\(h\)--print.Ovy\(h\).W\(100\%\) > table > tbody > tr')
-    elements = soup.select("#list-res-table")[0].find_all('tr')
-    for element in elements:
-        if len(element.select('td')) > 0:
-            currency["symbol"] = element.select('td')[0].text
-            currency["date"] = date()
-            currency["time"] = time()
-            currency["name"] = element.select('td')[1].text
-            currency["price"] = element.select('td')[2].text
-            currency["change"] = element.select('td')[3].text
-            currency["pctchange"] = element.select('td')[4].text
-        world.append(currency)
-        currency = {}
-    del world[0]
-    print(world)
-    return world
-
-def world_indices_check():
-    # WORLD INDICES
-    print("World Stock Market Indices")
-    indices = "https://finance.yahoo.com/world-indices"
-    print("checking: " + indices)
-    soup = get_soup(indices)
-    print("Web Page Read (Success!)")
-
-    indices = []
-    index = {}
-
-    # #list-res-table > div.Ovx\(a\).Ovx\(h\)--print.Ovy\(h\).W\(100\%\) > table > tbody > tr:nth-child(1) > td.Va\(m\).Ta\(start\).Pstart\(6px\).Start\(0\).Pend\(10px\).simpTblRow\:h_Bgc\(\$hoverBgColor\).Pos\(st\).Bgc\(\$lv3BgColor\).Z\(1\).Bgc\(\$lv2BgColor\).Ta\(start\)\!.Fz\(s\) > a
-    elements = soup.select("#list-res-table")[0].find_all('tr')
-
-    for element in elements:
-        if len(element.select('td')) > 0:
-            index["symbol"] = element.select('td')[0].text
-            index["date"] = date()
-            index["time"] = time()
-            index["name"] = element.select('td')[1].text
-            index["price"] = element.select('td')[2].text
-            index["change"] = element.select('td')[3].text
-            index["pctchange"] = element.select('td')[4].text
-        indices.append(index)
-        index = {}
-    del indices[0]
-    print(indices)
-    return indices
-
 # print a header showing all the details of when the transaction takes place
 def time_date():
     print("===================================================")
