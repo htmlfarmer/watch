@@ -1,6 +1,6 @@
 import psycopg2
 
-db_name = "stocks"
+db_name = "quotes"
 db_host = "localhost"
 db_user = "watch"
 db_pass = "watch"
@@ -16,6 +16,7 @@ def connect():
                             password=db_pass,
                             port=db_port)
     conn.autocommit = True
+    print("Connect Success! Host:" + db_host + " Database:" + db_name)
     return conn
 
 def create_database(database):
@@ -39,19 +40,36 @@ def create_table(table, db_name):
                             port=db_port)
     conn.autocommit = True
     cursor = conn.cursor()
-    cursor.execute('''CREATE TABLE prices
+
+    cursor.execute('''CREATE TABLE ''' + table + ''' 
                 (
-                    Date DATE NOT NULL,
-                    Open FLOAT NOT NULL,
-                    High FLOAT NOT NULL,
-                    Low FLOAT NOT NULL,
-                    Close FLOAT NOT NULL,
-                    Adj_Close FLOAT NOT NULL,
-                    Volume BIGINT NOT NULL,
-                    Ticker VARCHAR(255) NOT NULL
+                    ticker VARCHAR(255) NOT NULL
+                    date DATE NOT NULL,
+                    time TIME NOT NULL,
+                    name VARCHAR(255) NOT NULL
+                    price FLOAT NOT NULL,
+                    close FLOAT NOT NULL,
+                    open FLOAT NOT NULL,
+                    bid FLOAT NOT NULL,
+                    bidSize BIGINT NOT NULL,
+                    ask FLOAT NOT NULL,
+                    askSize BIGINT NOT NULL,
+                    high FLOAT NOT NULL,
+                    low FLOAT NOT NULL,
+                    52high FLOAT NOT NULL,
+                    52low FLOAT NOT NULL,
+                    volume BIGINT NOT NULL,
+                    avgVolume BIGINT NOT NULL,
+                    marketCap BIGINT NOT NULL,
+                    beta FLOAT NOT NULL,
+                    pe FLOAT NOT NULL,
+                    eps FLOAT NOT NULL,
+                    earningsDate DATE NOT NULL,
+                    dividend FLOAT NOT NULL,
+                    yield FLOAT NOT NULL,
+                    exdivDate DATE NOT NULL,
+                    target FLOAT NOT NULL
                     );''')
                 
     print("Table created successfully")
     conn.close()
-
-print("success!")

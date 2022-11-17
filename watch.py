@@ -87,14 +87,14 @@ def quote(symbol):
     stock["price"] = float(soup_quote.select("#quote-header-info")[0].find_all("fin-streamer")[0].text.replace(",", ""))
     if len(soup_quote.select("#quote-header-info")[0].find_all("fin-streamer")) >= 7:
         stock["after_hours"] = float(soup_quote.select("#quote-header-info")[0].find_all("fin-streamer")[6].text.replace(",", ""))
-    stock["closePrice"] = float(quotes[1].text.replace(",", ""))
-    stock["openPrice"] = float(quotes[3].text.replace(",", ""))
+    stock["close"] = float(quotes[1].text.replace(",", ""))
+    stock["open"] = float(quotes[3].text.replace(",", ""))
     stock["bid"] = float(quotes[5].text.split('x')[0].replace(" ", "").replace(",", ""))
     stock["bidSize"] = int(quotes[5].text.split('x')[1].replace(" ", "").replace(",", ""))
     stock["ask"] = float(quotes[7].text.split('x')[0].replace(" ", "").replace(",", ""))
     stock["askSize"] = int(quotes[7].text.split('x')[1].replace(" ", "").replace(",", ""))
-    stock["dayHigh"] = float(quotes[9].text.split('-')[1].replace(" ", "").replace(",", ""))
-    stock["dayLow"] = float(quotes[9].text.split('-')[0].replace(" ", "").replace(",", ""))
+    stock["high"] = float(quotes[9].text.split('-')[1].replace(" ", "").replace(",", ""))
+    stock["low"] = float(quotes[9].text.split('-')[0].replace(" ", "").replace(",", ""))
     stock["52High"] = float(quotes[11].text.split('-')[1].replace(" ", "").replace(",", ""))
     stock["52Low"] = float(quotes[11].text.split('-')[0].replace(" ", "").replace(",", ""))
     stock["volume"] = int(quotes[13].text.replace(",", ""))
@@ -115,10 +115,66 @@ def quote(symbol):
     else:
         stock["dividend"] = ""
     stock["yield"] = quotes[27].text.split('(')[1].replace(")", "").replace(" ", "").replace(",", "")
-    stock["exdifidendDate"] = quotes[29].text
+    stock["exdivDate"] = quotes[29].text
     stock["target"] = float(quotes[31].text.replace(",", ""))
     print(stock)
     return stock
+
+def currencies():
+    print("World Currencies")
+    currencies = "https://finance.yahoo.com/currencies/"
+    print("checking website: " + currencies)
+    soup = get_soup(currencies)
+    print ("Website read successfully!")
+
+    world = []
+    currency ={}
+
+    #elements = soup.select('#list-res-table > div.Ovx\(a\).Ovx\(h\)--print.Ovy\(h\).W\(100\%\) > table > tbody > tr')
+    elements = soup.select("#list-res-table")[0].find_all('tr')
+    for element in elements:
+        if len(element.select('td')) > 0:
+            currency["symbol"] = element.select('td')[0].text
+            currency["date"] = date()
+            currency["time"] = time()
+            currency["name"] = element.select('td')[1].text
+            currency["price"] = float(element.select('td')[2].text.replace(",", "").replace("+", ""))
+            currency["change"] = float(element.select('td')[3].text.replace(",", "").replace("+", ""))
+            currency["pctchange"] = float(element.select('td')[4].text.replace(",", "").replace("+", "").replace("%", ""))
+        world.append(currency)
+        currency = {}
+    del world[0]
+    print(world)
+    return world
+
+def world_indices_check():
+    # WORLD INDICES
+    print("World Stock Market Indices")
+    indices = "https://finance.yahoo.com/world-indices"
+    print("checking: " + indices)
+    soup = get_soup(indices)
+    print("Web Page Read (Success!)")
+
+    indices = []
+    index = {}
+
+    # #list-res-table > div.Ovx\(a\).Ovx\(h\)--print.Ovy\(h\).W\(100\%\) > table > tbody > tr:nth-child(1) > td.Va\(m\).Ta\(start\).Pstart\(6px\).Start\(0\).Pend\(10px\).simpTblRow\:h_Bgc\(\$hoverBgColor\).Pos\(st\).Bgc\(\$lv3BgColor\).Z\(1\).Bgc\(\$lv2BgColor\).Ta\(start\)\!.Fz\(s\) > a
+    elements = soup.select("#list-res-table")[0].find_all('tr')
+
+    for element in elements:
+        if len(element.select('td')) > 0:
+            index["symbol"] = element.select('td')[0].text
+            index["date"] = date()
+            index["time"] = time()
+            index["name"] = element.select('td')[1].text
+            index["price"] = float(element.select('td')[2].text.replace(",", "").replace("+", ""))
+            index["change"] = float(element.select('td')[3].text.replace(",", "").replace("+", ""))
+            index["pctchange"] = float(element.select('td')[4].text.replace(",", "").replace("+", "").replace("%", ""))
+        indices.append(index)
+        index = {}
+    del indices[0]
+    print(indices)
+    return indices
 
 def buy(stock):
     print ("buy")
@@ -271,62 +327,6 @@ def print_sub_trees(tree):
 
 def Merge(dict1, dict2):
     return {**dict1, **dict2}
-
-def currencies():
-    print("World Currencies")
-    currencies = "https://finance.yahoo.com/currencies/"
-    print("checking website: " + currencies)
-    soup = get_soup(currencies)
-    print ("Website read successfully!")
-
-    world = []
-    currency ={}
-
-    #elements = soup.select('#list-res-table > div.Ovx\(a\).Ovx\(h\)--print.Ovy\(h\).W\(100\%\) > table > tbody > tr')
-    elements = soup.select("#list-res-table")[0].find_all('tr')
-    for element in elements:
-        if len(element.select('td')) > 0:
-            currency["symbol"] = element.select('td')[0].text
-            currency["date"] = date()
-            currency["time"] = time()
-            currency["name"] = element.select('td')[1].text
-            currency["price"] = element.select('td')[2].text
-            currency["change"] = element.select('td')[3].text
-            currency["pctchange"] = element.select('td')[4].text
-        world.append(currency)
-        currency = {}
-    del world[0]
-    print(world)
-    return world
-
-def world_indices_check():
-    # WORLD INDICES
-    print("World Stock Market Indices")
-    indices = "https://finance.yahoo.com/world-indices"
-    print("checking: " + indices)
-    soup = get_soup(indices)
-    print("Web Page Read (Success!)")
-
-    indices = []
-    index = {}
-
-    # #list-res-table > div.Ovx\(a\).Ovx\(h\)--print.Ovy\(h\).W\(100\%\) > table > tbody > tr:nth-child(1) > td.Va\(m\).Ta\(start\).Pstart\(6px\).Start\(0\).Pend\(10px\).simpTblRow\:h_Bgc\(\$hoverBgColor\).Pos\(st\).Bgc\(\$lv3BgColor\).Z\(1\).Bgc\(\$lv2BgColor\).Ta\(start\)\!.Fz\(s\) > a
-    elements = soup.select("#list-res-table")[0].find_all('tr')
-
-    for element in elements:
-        if len(element.select('td')) > 0:
-            index["symbol"] = element.select('td')[0].text
-            index["date"] = date()
-            index["time"] = time()
-            index["name"] = element.select('td')[1].text
-            index["price"] = element.select('td')[2].text
-            index["change"] = element.select('td')[3].text
-            index["pctchange"] = element.select('td')[4].text
-        indices.append(index)
-        index = {}
-    del indices[0]
-    print(indices)
-    return indices
 
 # print a header showing all the details of when the transaction takes place
 def time_date():
