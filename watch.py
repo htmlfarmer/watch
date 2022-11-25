@@ -28,8 +28,8 @@ symbols_to_watch = ["pbr", "vale", "intc", "ttm", "goog"]
 def watch():
     time_date()
     #nlp()
-    #check_wikipedia_news()
-    #currencies()
+    check_wikipedia_news()
+    currencies()
     world_indices_check()
     
     for symbol in symbols_to_watch:
@@ -49,7 +49,6 @@ def tag_visible(element):
     if isinstance(element, Comment):
         return False
     return True
-
 
 def text_from_html(body):
     soup = BeautifulSoup(body, 'html.parser')

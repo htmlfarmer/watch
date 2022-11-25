@@ -3,7 +3,7 @@ import psycopg2
 db_name = "quotes"
 db_host = "localhost"
 db_user = "watch"
-db_pass = "watch"
+db_pass = ""
 db_port = 5432
 
 # https://medium.com/the-handbook-of-coding-in-finance/building-financial-data-storage-with-postgresql-in-python-b981e38826fe
