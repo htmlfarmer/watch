@@ -29,8 +29,8 @@ def watch():
     time_date()
     #nlp()
     check_wikipedia_news()
-    currencies()
-    world_indices_check()
+    #currencies()
+    #world_indices_check()
     
     for symbol in symbols_to_watch:
         quote(symbol)
