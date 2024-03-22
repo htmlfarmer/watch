@@ -9,7 +9,7 @@ from file import WRITE
 
 def REQUEST(address):
     req = urllib.request.Request(address)
-    req.add_header('User-Agent', 'Research (Linux/MacOS; Pacific North West, USA)')
+    req.add_header('User-Agent', 'RESEARCH (LINUX; Pacific North West, USA)')
     response = urllib.request.urlopen(req)
     #html = response.read().unicode(str, errors='replace')
     html = response.read().decode('utf-8')  # make sure its all text not binary
