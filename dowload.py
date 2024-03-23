@@ -79,4 +79,5 @@ def download_wikipedia_pages(cities_table, save_directory):
 # Example usage:
 # cities_table = [] listed above!
 save_directory = "./city"
-download_wikipedia_pages(cities_table, save_directory)
+# no longer needed already done!
+# download_wikipedia_pages(cities_table, save_directory)
