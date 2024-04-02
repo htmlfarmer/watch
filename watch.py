@@ -22,7 +22,7 @@ from nltk.corpus import stopwords
 # TODO setup NLP natural language processing
 # TODO setup GUI interface with Python! 
 
-symbols_to_watch = ["pbr", "vale", "intc", "ttm", "goog"]
+symbols_to_watch = ["ttm", "goog"]
 
 # Here is the main program that "watches" the internet for me!
 def watch():
@@ -79,6 +79,9 @@ def quote(symbol):
     # todo add finance stats
     #quate_stats = "https://finance.yahoo.com/quote/" + symbol + "/key-statistics?p=" + symbol
     soup_quote = get_soup(quote_url)
+    if soup_quote == None:
+        print(f"missing stock webpage: {stock}, error")
+        return 
     quotes = soup_quote.select("#quote-summary")[0].find_all('td')
     # typical length of quotes is 32
     # get the stock name
@@ -261,8 +264,11 @@ def xpath_text(website, xpath):
 
 def get_soup(url):
     html = REQUEST(url)
-    return BeautifulSoup(html, 'html.parser')
-
+    if html != None:
+        return BeautifulSoup(html, 'html.parser')
+    else:
+        return None
+    
 def get_html(url):
     return REQUEST(url)
 

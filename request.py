@@ -5,15 +5,25 @@ from file import WRITE
 
 # REQUEST(address)
 # DETAILS: gets the HTML from any website address
-
+from urllib.error import HTTPError
 
 def REQUEST(address):
-    req = urllib.request.Request(address)
-    req.add_header('User-Agent', 'RESEARCH (LINUX; Pacific North West, USA)')
-    response = urllib.request.urlopen(req)
-    #html = response.read().unicode(str, errors='replace')
-    html = response.read().decode('utf-8')  # make sure its all text not binary
-    return html
+    try:
+        req = urllib.request.Request(address)
+        req.add_header('User-Agent', 'RESEARCH (LINUX; Pacific North West, USA)')
+        response = urllib.request.urlopen(req)
+        if response.getcode() == 200:  # Checking if page exists
+            html = response.read().decode('utf-8')  # Decoding response
+            return html
+        else:
+            print("Page not found")
+            return None
+    except HTTPError as e:
+        print(f"HTTP Error: {e.code} - {e.reason}")
+        return None
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
 
 
 # REQUEST(address, filename, directory)
